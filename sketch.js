@@ -33,11 +33,14 @@ var help = false;
 
 function keyPressed() {
     if (!begin) {
-        console.log("Running A* algorithm...");
-        start.wall = false;
-        end.wall = false;
-        begin = true;
-        beginTime = millis();
+        if (key === 'm') genMaze();
+        else {
+            console.log("Running A* algorithm...");
+            start.wall = false;
+            end.wall = false;
+            begin = true;
+            beginTime = millis();
+        }
     } else if (key === 'r') {
         console.log("Restarting A* algorithm...");
         setup();
