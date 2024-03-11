@@ -28,6 +28,7 @@ var previous;
 var current;
 var beginTime;
 var finalScore;
+var highScore = 0;
 var help = false;
 
 function keyPressed() {
@@ -214,7 +215,8 @@ function showScore() {
     strokeWeight(1);
     textSize(18);
     textFont('Courier New');
-    text("Your score is: " + finalScore, 220, 615);
+    text("Your score is: " + finalScore, 220, 616);
+    text("High score: " + highScore, 220, 640);
 }
 
 function draw() {
@@ -244,6 +246,7 @@ function draw() {
                 var score = (millis() - beginTime) / 100;
                 console.log("Your score is: " + round(score));
                 finalScore = round(score);
+                highScore = Math.max(highScore, finalScore);
             }
             removeFromArray(openSet, current);
             closedSet.push(current);
