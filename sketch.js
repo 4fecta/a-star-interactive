@@ -23,7 +23,9 @@ var end;
 var w, h, r;
 var path = [];
 var begin = false;
+var done = false;
 var previous;
+var current;
 var beginTime;
 
 function keyPressed() {
@@ -33,6 +35,9 @@ function keyPressed() {
         end.wall = false;
         begin = true;
         beginTime = millis();
+    } else if (key === 'r') {
+        console.log("Restarting A* algorithm...");
+        setup();
     }
 }
 
@@ -109,6 +114,12 @@ function Spot(i, j) {
 function setup() {
     createCanvas(600, 600);
 
+    openSet = [];
+    closedSet = [];
+    path = [];
+    begin = false;
+    done = false;
+
     console.log("Welcome to the A* visualization game!\n\n" +
         "To begin playing, simply left-click and drag to create walls, and right-click to delete them.\n\n" +
         "When you are ready, press any key to start watching the algorithm solve your maze!\n\n" +
@@ -152,9 +163,9 @@ function showGrid() {
     for (var i = 0; i < cols; i++) for (var j = 0; j < rows; j++) grid[i][j].show();
 }
 
-function showPath(current) {
+function showPath(endpoint) {
     path = [];
-    var temp = current;
+    var temp = endpoint;
     path.push(temp);
     while (temp.prev) {
         path.push(temp.prev);
@@ -174,16 +185,16 @@ function showPath(current) {
 
 function draw() {
     background(255);
-    if (begin) {
+    if (begin && !done) {
         if (openSet.length > 0) {
             var id = 0;
             for (var i = 0; i < openSet.length; i++) {
                 if (openSet[i].f < openSet[id].f) id = i;
             }
-            var current = openSet[id];
+            current = openSet[id];
             previous = current;
             if (current === end) {
-                noLoop();
+                done = true;
                 console.log("DONE!");
                 var score = (millis() - beginTime) / 100;
                 console.log("Your score is: " + round(score));
@@ -214,11 +225,12 @@ function draw() {
                 }
             }
         } else {
-            noLoop();
+            done = true;
             console.log("No Solution!");
             console.log("Your score is: 0");
             showGrid();
-            showPath(previous);
+            current = previous;
+            showPath(current);
             return;
         }
     }
