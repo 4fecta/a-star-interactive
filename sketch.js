@@ -27,6 +27,8 @@ var done = false;
 var previous;
 var current;
 var beginTime;
+var finalScore;
+var help = false;
 
 function keyPressed() {
     if (!begin) {
@@ -112,7 +114,31 @@ function Spot(i, j) {
 }
 
 function setup() {
-    createCanvas(600, 600);
+    createCanvas(600, 750);
+    let runButton = createButton('Run!');
+    runButton.position(5, 600);
+    runButton.mousePressed(() => {
+        if (begin) return;
+        console.log("Running A* algorithm...");
+        start.wall = false;
+        end.wall = false;
+        begin = true;
+        beginTime = millis();
+    });
+
+    let restartButton = createButton('Restart');
+    restartButton.position(537, 600);
+    restartButton.mousePressed(() => {
+        if (!begin) return;
+        console.log("Restarting A* algorithm...");
+        setup();
+    });
+
+    let helpButton = createButton('Help');
+    helpButton.position(5, 625);
+    helpButton.mousePressed(() => {
+        help = !help;
+    });
 
     openSet = [];
     closedSet = [];
@@ -127,8 +153,8 @@ function setup() {
         "Be careful though, if your maze has no solution, you will receive a score of 0!\n\n" +
         "Good luck!");
 
-    w = width / cols;
-    h = height / rows;
+    w = 600 / cols;
+    h = 600 / rows;
     r = w;
 
     for (var i = 0; i < cols; i++) grid[i] = new Array(rows);
@@ -183,8 +209,27 @@ function showPath(endpoint) {
     }
 }
 
+function showScore() {
+    stroke(0);
+    strokeWeight(1);
+    textSize(18);
+    textFont('Courier New');
+    text("Your score is: " + finalScore, 220, 615);
+}
+
 function draw() {
     background(255);
+    if (!begin && help) {
+        stroke(0);
+        strokeWeight(1);
+        textSize(10);
+        textFont('Courier New');
+        text("Welcome to the A* visualization game! " +
+        "To begin playing, simply left-click and drag to create walls or right-click to delete them. " +
+        "When you are ready, press any key to start watching the algorithm solve your maze! " +
+        "At the end, you will receive a score proportional to the time taken to solve your maze. " +
+        "Be careful though, if your maze has no solution, you will receive a score of 0! Good luck!", 62, 605, 485, 700);
+    }
     if (begin && !done) {
         if (openSet.length > 0) {
             var id = 0;
@@ -198,6 +243,7 @@ function draw() {
                 console.log("DONE!");
                 var score = (millis() - beginTime) / 100;
                 console.log("Your score is: " + round(score));
+                finalScore = round(score);
             }
             removeFromArray(openSet, current);
             closedSet.push(current);
@@ -228,9 +274,11 @@ function draw() {
             done = true;
             console.log("No Solution!");
             console.log("Your score is: 0");
+            finalScore = 0;
             showGrid();
             current = previous;
             showPath(current);
+            showScore();
             return;
         }
     }
@@ -247,4 +295,5 @@ function draw() {
     }
     showGrid();
     if (begin) showPath(current);
+    if (done) showScore();
 }
