@@ -161,21 +161,14 @@ function genMaze() { // Wilson's algorithm for uniform random maze
             [x, y] = [nx, ny];
         }
         curpath.push([x, y]);
-        //console.log("path:");
-        for (var i = 0; i < curpath.length; i++) {
-            vis[curpath[i][0]][curpath[i][1]] = true;
-            //console.log(curpath[i][0] + " " + curpath[i][1]);
-        }
+        for (var i = 0; i < curpath.length; i++) vis[curpath[i][0]][curpath[i][1]] = true;
         for (var i = 1; i < curpath.length; i++) {
             var x1 = curpath[i][0], x2 = curpath[i - 1][0];
             var y1 = curpath[i][1], y2 = curpath[i - 1][1];
             if (x1 > x2) [x1, x2] = [x2, x1];
             if (y1 > y2) [y1, y2] = [y2, y1];
-            if (x1 < x2) {
-                grid[x1 * 2 + 2][y1 * 2 + 1].wall = false;
-            } else {
-                grid[x1 * 2 + 1][y1 * 2 + 2].wall = false;
-            }
+            if (x1 < x2) grid[x1 * 2 + 2][y1 * 2 + 1].wall = false;
+            else grid[x1 * 2 + 1][y1 * 2 + 2].wall = false;
         }
     }
     start.wall = false;
