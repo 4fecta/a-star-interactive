@@ -11,7 +11,7 @@ function removeFromArray(arr, elt) {
     }
 }
 
-var size = 64; //change these parameters to change dimensions of grid
+var size = 65; //change these parameters to change dimensions of grid
 var cols = size;
 var rows = size;
 var grid = new Array(cols);
@@ -114,6 +114,74 @@ function Spot(i, j) {
     }
 }
 
+function genMaze() { // Wilson's algorithm for uniform random maze
+    for (var i = 0; i < cols; i++) {
+        for (var j = 0; j < rows; j++) {
+            if (i % 2 == 0 || j % 2 == 0) grid[i][j].wall = true;
+            else grid[i][j].wall = false;
+        }
+    }
+    var ncols = Math.floor(cols / 2);
+    var nrows = Math.floor(rows / 2);
+    var vis = [];
+    for (var i = 0; i < ncols; i++) vis[i] = [];
+    for (var i = 0; i < ncols; i++) {
+        for (var j = 0; j < nrows; j++) {
+            vis[i][j] = false;
+        }
+    }
+    vis[0][nrows - 1] = true;
+    while (true) {
+        var x = -1, y = -1, px = 0, py = 0;
+        for (var i = 0; i < ncols; i++) {
+            for (var j = 0; j < nrows; j++) {
+                if (!vis[i][j]) [x, y] = [i, j];
+            }
+        }
+        if (x < 0) break;
+        var curpath = [];
+        let check = (Path, A) => {
+            for (var i = 0; i < Path.length; i++) {
+                if (Path[i][0] === A[0] && Path[i][1] === A[1]) return true;
+            }
+            return false;
+        }
+        while (!vis[x][y]) {
+            while (check(curpath, [x, y])) curpath.pop();
+            curpath.push([x, y]);
+            var nx, ny;
+            do {
+                var rng = random(1);
+                if (rng < 0.25) nx = x + 1, ny = y;
+                else if (rng < 0.5) nx = x - 1, ny = y;
+                else if (rng < 0.75) ny = y + 1, nx = x;
+                else ny = y - 1, nx = x;
+            } while (nx < 0 || ny < 0 || nx >= ncols || ny >= nrows || (nx === px && ny === py));
+            [px, py] = [x, y];
+            [x, y] = [nx, ny];
+        }
+        curpath.push([x, y]);
+        //console.log("path:");
+        for (var i = 0; i < curpath.length; i++) {
+            vis[curpath[i][0]][curpath[i][1]] = true;
+            //console.log(curpath[i][0] + " " + curpath[i][1]);
+        }
+        for (var i = 1; i < curpath.length; i++) {
+            var x1 = curpath[i][0], x2 = curpath[i - 1][0];
+            var y1 = curpath[i][1], y2 = curpath[i - 1][1];
+            if (x1 > x2) [x1, x2] = [x2, x1];
+            if (y1 > y2) [y1, y2] = [y2, y1];
+            if (x1 < x2) {
+                grid[x1 * 2 + 2][y1 * 2 + 1].wall = false;
+            } else {
+                grid[x1 * 2 + 1][y1 * 2 + 2].wall = false;
+            }
+        }
+    }
+    start.wall = false;
+    end.wall = false;
+}
+
 function setup() {
     createCanvas(600, 750);
     let runButton = createButton('Run!');
@@ -141,6 +209,12 @@ function setup() {
         help = !help;
     });
 
+    let mazeButton = createButton('Maze!');
+    mazeButton.position(543.5, 625);
+    mazeButton.mousePressed(() => {
+        if (!begin) genMaze();
+    });
+
     openSet = [];
     closedSet = [];
     path = [];
@@ -159,7 +233,7 @@ function setup() {
     r = w;
 
     for (var i = 0; i < cols; i++) grid[i] = new Array(rows);
-
+    
     for (var i = 0; i < cols; i++) {
         for (var j = 0; j < rows; j++) {
             grid[i][j] = new Spot(i, j);
