@@ -34,6 +34,7 @@ var help = false;
 function keyPressed() {
     if (!begin) {
         if (key === 'm') genMaze();
+        else if (key === 'h') help = !help;
         else {
             console.log("Running A* algorithm...");
             start.wall = false;
@@ -202,7 +203,7 @@ function setup() {
     let helpButton = createButton('Help');
     helpButton.position(5, 625);
     helpButton.mousePressed(() => {
-        help = !help;
+        if (!begin) help = !help;
     });
 
     let mazeButton = createButton('Maze!');
