@@ -223,7 +223,7 @@ function draw() {
     background(255);
     if (!begin && help) {
         stroke(0);
-        strokeWeight(1);
+        strokeWeight(0.5);
         textSize(10);
         textFont('Courier New');
         text("Welcome to the A* visualization game! " +
