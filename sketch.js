@@ -14,7 +14,7 @@ function removeFromArray(arr, elt) {
 var size = 65; //change these parameters to change dimensions of grid
 var cols = size;
 var rows = size;
-var grid = new Array(cols);
+var grid = [];
 
 var openSet = [];
 var closedSet = [];
@@ -220,7 +220,7 @@ function setupGrid() {
     h = 600 / rows;
     r = w;
 
-    for (var i = 0; i < cols; i++) grid[i] = new Array(rows);
+    for (var i = 0; i < cols; i++) grid[i] = [];
     
     for (var i = 0; i < cols; i++) {
         for (var j = 0; j < rows; j++) {
