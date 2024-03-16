@@ -32,23 +32,31 @@ var highScore = 0;
 var help = false;
 let slider;
 
+function run() {
+    slider.hide();
+    // console.log("Running A* algorithm...");
+    start.wall = false;
+    end.wall = false;
+    begin = true;
+    beginTime = millis();
+}
+
+function restart() {
+    slider.show();
+    // console.log("Restarting A* algorithm...");
+    setupGrid();
+}
+
 function keyPressed() {
     if (!begin) {
         if (key === 'm') genMaze();
-        else if (key === 'h') help = !help;
-        else {
-            slider.hide();
-            console.log("Running A* algorithm...");
-            start.wall = false;
-            end.wall = false;
-            begin = true;
-            beginTime = millis();
+        else if (key === 'h') {
+            help = !help;
+            if (help) slider.hide();
+            else slider.show();
         }
-    } else if (key === 'r') {
-        slider.show();
-        console.log("Restarting A* algorithm...");
-        setupGrid();
-    }
+        else run();
+    } else if (key === 'r') restart();
 }
 
 function Spot(i, j) {
@@ -189,12 +197,12 @@ function setupGrid() {
     begin = false;
     done = false;
 
-    console.log("Welcome to the A* visualization game!\n\n" +
-        "To begin playing, simply left-click and drag to create walls, and right-click to delete them.\n\n" +
-        "When you are ready, press any key to start watching the algorithm solve your maze!\n\n" +
-        "At the end, you will receive a score proportional to the time taken to solve your maze.\n\n" +
-        "Be careful though, if your maze has no solution, you will receive a score of 0!\n\n" +
-        "Good luck!");
+    // console.log("Welcome to the A* visualization game!\n\n" +
+    //     "To begin playing, simply left-click and drag to create walls, and right-click to delete them.\n\n" +
+    //     "When you are ready, press any key to start watching the algorithm solve your maze!\n\n" +
+    //     "At the end, you will receive a score proportional to the time taken to solve your maze.\n\n" +
+    //     "Be careful though, if your maze has no solution, you will receive a score of 0!\n\n" +
+    //     "Good luck!");
 
     w = 600 / cols;
     h = 600 / rows;
@@ -222,27 +230,28 @@ function setupGrid() {
     openSet.push(start);
 }
 
+function resizeGrid() {
+    var psize = size;
+    size = slider.value() + 1;
+    rows = size;
+    cols = size;
+    if (psize !== size) setupGrid();
+}
+
 function setup() {
     createCanvas(600, 750);
     let runButton = createButton('Run!');
     runButton.position(5, 600);
     runButton.mousePressed(() => {
         if (begin) return;
-        slider.hide();
-        console.log("Running A* algorithm...");
-        start.wall = false;
-        end.wall = false;
-        begin = true;
-        beginTime = millis();
+        run();
     });
 
     let restartButton = createButton('Restart');
     restartButton.position(537, 600);
     restartButton.mousePressed(() => {
         if (!begin) return;
-        slider.show();
-        console.log("Restarting A* algorithm...");
-        setupGrid();
+        restart();
     });
 
     let helpButton = createButton('Help');
@@ -264,25 +273,12 @@ function setup() {
     slider = createSlider(8, 128, 64, 2);
     slider.position(70, 613);
     slider.size(442);
-    slider.mouseClicked(() => {
-        var psize = size;
-        size = slider.value() + 1;
-        console.log(size);
-        rows = size;
-        cols = size;
-        if (psize !== size) setupGrid();
-    });
+    slider.mouseClicked(() => {resizeGrid();});
     slider.mouseMoved(() => {
         if (!mouseIsPressed) return;
-        var psize = size;
-        size = slider.value() + 1;
-        console.log(size);
-        rows = size;
-        cols = size;
-        if (psize !== size) setupGrid();
+        resizeGrid();
     });
-    
-    
+    slider.touchMoved(() => {resizeGrid();});
 
     setupGrid();
 }
@@ -349,9 +345,9 @@ function draw() {
             previous = current;
             if (current === end) {
                 done = true;
-                console.log("DONE!");
+                // console.log("DONE!");
                 var score = (millis() - beginTime) / 100;
-                console.log("Your score is: " + round(score));
+                // console.log("Your score is: " + round(score));
                 finalScore = round(score);
                 highScore = Math.max(highScore, finalScore);
             }
@@ -382,8 +378,8 @@ function draw() {
             }
         } else {
             done = true;
-            console.log("No Solution!");
-            console.log("Your score is: 0");
+            // console.log("No Solution!");
+            // console.log("Your score is: 0");
             finalScore = 0;
             showGrid();
             current = previous;
