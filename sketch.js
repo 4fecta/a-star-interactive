@@ -52,7 +52,16 @@ function restart() {
 function keyPressed() {
     if (key === 'r') restart();
     else if (!begin) {
-        if (key === 'm') mazeMode = !mazeMode, setupGrid();
+        if (keyCode === LEFT_ARROW) {
+            var nsize = Math.max(size - 3, 8);
+            slider.value(nsize);
+            resizeGrid();
+        } else if (keyCode === RIGHT_ARROW) {
+            var nsize = Math.min(size + 1, 128);
+            slider.value(nsize);
+            resizeGrid();
+        }
+        else if (key === 'm') mazeMode = !mazeMode, setupGrid();
         else if (key === 'h') {
             help = !help;
             if (help) slider.hide();
