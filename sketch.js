@@ -30,12 +30,14 @@ var beginTime;
 var finalScore;
 var highScore = 0;
 var help = false;
+let slider;
 
 function keyPressed() {
     if (!begin) {
         if (key === 'm') genMaze();
         else if (key === 'h') help = !help;
         else {
+            slider.hide();
             console.log("Running A* algorithm...");
             start.wall = false;
             end.wall = false;
@@ -43,8 +45,9 @@ function keyPressed() {
             beginTime = millis();
         }
     } else if (key === 'r') {
+        slider.show();
         console.log("Restarting A* algorithm...");
-        setup();
+        setupGrid();
     }
 }
 
@@ -179,39 +182,7 @@ function genMaze() { // Wilson's algorithm for uniform random maze
     end.wall = false;
 }
 
-function setup() {
-    createCanvas(600, 750);
-    let runButton = createButton('Run!');
-    runButton.position(5, 600);
-    runButton.mousePressed(() => {
-        if (begin) return;
-        console.log("Running A* algorithm...");
-        start.wall = false;
-        end.wall = false;
-        begin = true;
-        beginTime = millis();
-    });
-
-    let restartButton = createButton('Restart');
-    restartButton.position(537, 600);
-    restartButton.mousePressed(() => {
-        if (!begin) return;
-        console.log("Restarting A* algorithm...");
-        setup();
-    });
-
-    let helpButton = createButton('Help');
-    helpButton.position(5, 625);
-    helpButton.mousePressed(() => {
-        if (!begin) help = !help;
-    });
-
-    let mazeButton = createButton('Maze!');
-    mazeButton.position(543.5, 625);
-    mazeButton.mousePressed(() => {
-        if (!begin) genMaze();
-    });
-
+function setupGrid() {
     openSet = [];
     closedSet = [];
     path = [];
@@ -249,6 +220,71 @@ function setup() {
     end.wall = false;
 
     openSet.push(start);
+}
+
+function setup() {
+    createCanvas(600, 750);
+    let runButton = createButton('Run!');
+    runButton.position(5, 600);
+    runButton.mousePressed(() => {
+        if (begin) return;
+        slider.hide();
+        console.log("Running A* algorithm...");
+        start.wall = false;
+        end.wall = false;
+        begin = true;
+        beginTime = millis();
+    });
+
+    let restartButton = createButton('Restart');
+    restartButton.position(537, 600);
+    restartButton.mousePressed(() => {
+        if (!begin) return;
+        slider.show();
+        console.log("Restarting A* algorithm...");
+        setupGrid();
+    });
+
+    let helpButton = createButton('Help');
+    helpButton.position(5, 625);
+    helpButton.mousePressed(() => {
+        if (!begin) {
+            help = !help;
+            if (help) slider.hide();
+            else slider.show();
+        }
+    });
+
+    let mazeButton = createButton('Maze!');
+    mazeButton.position(543.5, 625);
+    mazeButton.mousePressed(() => {
+        if (!begin) genMaze();
+    });
+
+    slider = createSlider(8, 128, 64, 2);
+    slider.position(70, 613);
+    slider.size(442);
+    slider.mouseClicked(() => {
+        var psize = size;
+        size = slider.value() + 1;
+        console.log(size);
+        rows = size;
+        cols = size;
+        if (psize !== size) setupGrid();
+    });
+    slider.mouseMoved(() => {
+        if (!mouseIsPressed) return;
+        var psize = size;
+        size = slider.value() + 1;
+        console.log(size);
+        rows = size;
+        cols = size;
+        if (psize !== size) setupGrid();
+    });
+    
+    
+
+    setupGrid();
 }
 
 function heuristic(a, b) { //when heuristic(a, b) = 0, A* becomes Dijkstra's algorithm
