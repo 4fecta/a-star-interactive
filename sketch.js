@@ -241,21 +241,21 @@ function resizeGrid() {
 function setup() {
     createCanvas(600, 750);
     let runButton = createButton('Run!');
-    runButton.position(5, 600);
+    runButton.position(2, 600);
     runButton.mousePressed(() => {
         if (begin) return;
         run();
     });
 
     let restartButton = createButton('Restart');
-    restartButton.position(537, 600);
+    restartButton.position(539.4, 600);
     restartButton.mousePressed(() => {
         if (!begin) return;
         restart();
     });
 
     let helpButton = createButton('Help');
-    helpButton.position(5, 625);
+    helpButton.position(2, 625);
     helpButton.mousePressed(() => {
         if (!begin) {
             help = !help;
@@ -265,7 +265,7 @@ function setup() {
     });
 
     let mazeButton = createButton('Maze!');
-    mazeButton.position(543.5, 625);
+    mazeButton.position(545.9, 625);
     mazeButton.mousePressed(() => {
         if (!begin) genMaze();
     });
@@ -278,6 +278,7 @@ function setup() {
         if (!mouseIsPressed) return;
         resizeGrid();
     });
+    slider.touchStarted(() => {resizeGrid();});
     slider.touchMoved(() => {resizeGrid();});
 
     setupGrid();
