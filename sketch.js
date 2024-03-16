@@ -30,6 +30,7 @@ var beginTime;
 var finalScore;
 var highScore = 0;
 var help = false;
+var mazeMode = false;
 let slider;
 
 function run() {
@@ -42,21 +43,23 @@ function run() {
 }
 
 function restart() {
+    help = false;
     slider.show();
     // console.log("Restarting A* algorithm...");
     setupGrid();
 }
 
 function keyPressed() {
-    if (!begin) {
-        if (key === 'm') genMaze();
+    if (key === 'r') restart();
+    else if (!begin) {
+        if (key === 'm') mazeMode = !mazeMode, setupGrid();
         else if (key === 'h') {
             help = !help;
             if (help) slider.hide();
             else slider.show();
         }
         else run();
-    } else if (key === 'r') restart();
+    }
 }
 
 function Spot(i, j) {
@@ -228,6 +231,8 @@ function setupGrid() {
     end.wall = false;
 
     openSet.push(start);
+
+    if (mazeMode) genMaze();
 }
 
 function resizeGrid() {
@@ -250,7 +255,7 @@ function setup() {
     let restartButton = createButton('Restart');
     restartButton.position(539.4, 600);
     restartButton.mousePressed(() => {
-        if (!begin) return;
+        //if (!begin) return;
         restart();
     });
 
@@ -267,7 +272,7 @@ function setup() {
     let mazeButton = createButton('Maze!');
     mazeButton.position(545.9, 625);
     mazeButton.mousePressed(() => {
-        if (!begin) genMaze();
+        if (!begin) mazeMode = !mazeMode, setupGrid();
     });
 
     slider = createSlider(8, 128, 64, 2);
