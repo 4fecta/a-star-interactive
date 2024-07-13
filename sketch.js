@@ -30,7 +30,7 @@ var beginTime;
 var finalScore;
 var highScore = 0;
 var help = false;
-var mazeMode = false;
+var mazeMode = true;
 let slider;
 
 function run() {
